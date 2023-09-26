@@ -2,9 +2,8 @@ package cc.mewcraft.worldreset.schedule
 
 import cc.mewcraft.worldreset.data.CommandData
 import cc.mewcraft.worldreset.data.CronData
-import org.bukkit.plugin.Plugin
 
-class ConsoleCommandSchedule(
+class CommandSchedule(
     name: String,
     cron: CronData,
     private val commandData: CommandData,

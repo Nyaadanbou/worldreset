@@ -5,14 +5,21 @@ import java.io.File
 import kotlin.io.path.Path
 
 class PathData(
-    paths: List<String>,
+    path: String,
 ) {
-    private val files: List<File> = paths.map { Path(it).toFile() }
+    private val file: File = Path(path).toFile()
 
     /**
-     * Deletes files specified by [files].
+     * Prints essential information about [file].
      */
-    fun deleteFiles() { // TODO
-        files.forEach { logger.info("Deleting file: ${it.path}") }
+    fun print() { // TODO
+
+    }
+
+    /**
+     * Deletes [file].
+     */
+    fun delete() { // TODO
+        logger.info("Deleting file: ${file.path}")
     }
 }

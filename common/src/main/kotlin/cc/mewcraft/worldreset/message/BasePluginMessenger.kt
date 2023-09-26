@@ -7,7 +7,7 @@ import me.lucko.helper.terminable.Terminable
 /**
  * Base messenger.
  */
-open class BasePluginMessenger(
+sealed class BasePluginMessenger(
     messenger: Messenger,
 ) : Terminable {
     protected val scheduleChannel: ConversationChannel<GetScheduleRequest, GetScheduleResponse> = messenger.getConversationChannel(
