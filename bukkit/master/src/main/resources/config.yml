@@ -12,14 +12,6 @@ schedules:
   #           ...
   #   <dedicated setting n>
 
-  file_cleanup/old_server_logs:
-    type: FILE_CLEANUP # The <FILE_CLEANUP> schedule type deletes specified files.
-    cron: "0 4 * * FRI"
-    time: "14d"
-    paths: # The file paths, derived from the server root.
-      - 'logs'
-      - 'crash-reports'
-
   console_command/random_broadcast:
     type: CONSOLE_COMMAND
     cron: "10 12 * * FRI"
@@ -30,19 +22,19 @@ schedules:
     type: BROADCAST # The <BROADCAST> schedule type broadcasts messages to the whole server.
     cron: "50 11 * * FRI"
     messages: # List of messages to be broadcast, parsed as MiniMessage strings.
-      - "<red>世界重置倒计时 10m"
+      - "<red>中土世界重置倒计时 10m"
 
   broadcast/countdown_5m:
     type: BROADCAST
     cron: "55 11 * * FRI"
     messages:
-      - "<red>世界重置倒计时 5m"
+      - "<red>中土世界重置倒计时 5m"
 
   broadcast/countdown_1m:
     type: BROADCAST
     cron: "59 11 * * FRI"
     messages:
-      - "<red>世界重置倒计时 1m"
+      - "<red>中土世界重置倒计时 1m"
 
   # Important Notes on the usage of World Reset Schedule:
   #

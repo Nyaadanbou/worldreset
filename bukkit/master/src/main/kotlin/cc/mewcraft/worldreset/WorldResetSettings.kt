@@ -1,7 +1,13 @@
 package cc.mewcraft.worldreset
 
-import cc.mewcraft.worldreset.data.*
-import cc.mewcraft.worldreset.schedule.*
+import cc.mewcraft.worldreset.data.BroadcastData
+import cc.mewcraft.worldreset.data.CommandData
+import cc.mewcraft.worldreset.data.CronData
+import cc.mewcraft.worldreset.data.WorldData
+import cc.mewcraft.worldreset.schedule.BroadcastSchedule
+import cc.mewcraft.worldreset.schedule.ConsoleCommandSchedule
+import cc.mewcraft.worldreset.schedule.Schedule
+import cc.mewcraft.worldreset.schedule.WorldResetSchedule
 import org.bukkit.configuration.ConfigurationSection
 
 /**
@@ -35,7 +41,6 @@ class WorldResetSettings {
                             "BROADCAST" -> loadBroadcastSchedule(key, cron, this@schedule)
                             "WORLD_RESET" -> loadWorldResetSchedule(key, cron, this@schedule)
                             "CONSOLE_COMMAND" -> loadConsoleCommandSchedule(key, cron, this@schedule)
-                            "FILE_CLEANUP" -> loadFileCleanupSchedule(key, cron, this@schedule)
                             else -> throw IllegalArgumentException(type)
                         }
                         this@buildList += schedule
@@ -67,17 +72,6 @@ class WorldResetSettings {
         val commands = config.getStringList("commands")
         return ConsoleCommandSchedule(
             name, cron, CommandData(commands)
-        )
-    }
-
-    private fun loadFileCleanupSchedule(
-        name: String,
-        cron: CronData,
-        config: ConfigurationSection,
-    ): FileCleanupSchedule {
-        val commands = config.getStringList("paths")
-        return FileCleanupSchedule(
-            name, cron, PathData(commands)
         )
     }
 
