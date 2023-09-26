@@ -1,0 +1,116 @@
+# This is the list of all schedules.
+schedules:
+
+  # Below is an example section of schedule.
+  # You can duplicate the section to create more.
+  # A general example:
+  # <node key>: [The <node key> is the schedule name. Must be unique among all the schedules.]
+  #   type: <schedule type> [Schedule type. Available values: BROADCAST, WORLD_RESET, CONSOLE_COMMAND, FILE_CLEANUP]
+  #   cron: "50 11 * * FRI" [Date & time when this schedule will be executed, written in Linux CRON format]
+  #   <dedicated setting 1> [This will be corresponding settings depending on the value of <schedule type>]
+  #   <dedicated setting 2>
+  #           ...
+  #   <dedicated setting n>
+
+  file_cleanup/old_server_logs:
+    type: FILE_CLEANUP # The <FILE_CLEANUP> schedule type deletes specified files.
+    cron: "0 4 * * FRI"
+    time: "14d"
+    paths: # The file paths, derived from the server root.
+      - 'logs'
+      - 'crash-reports'
+
+  console_command/random_broadcast:
+    type: CONSOLE_COMMAND
+    cron: "10 12 * * FRI"
+    commands:
+      - "say This is a random console command."
+
+  broadcast/countdown_10m:
+    type: BROADCAST # The <BROADCAST> schedule type broadcasts messages to the whole server.
+    cron: "50 11 * * FRI"
+    messages: # List of messages to be broadcast, parsed as MiniMessage strings.
+      - "<red>世界重置倒计时 10m"
+
+  broadcast/countdown_5m:
+    type: BROADCAST
+    cron: "55 11 * * FRI"
+    messages:
+      - "<red>世界重置倒计时 5m"
+
+  broadcast/countdown_1m:
+    type: BROADCAST
+    cron: "59 11 * * FRI"
+    messages:
+      - "<red>世界重置倒计时 1m"
+
+  # Important Notes on the usage of World Reset Schedule:
+  #
+  # Resetting a world is never a trivial task.
+  # Many assumptions are made to ensure the world reset process goes through smoothly.
+  # Failing to implement any assumptions in the server may result in player data loss!
+  #
+  # Following are the assumptions that you MUST implement in the server:
+  #   1. The Main World (minecraft:overworld) must be small, safe, and cannot be modified by players.
+  #      The Main World acts as a temporary world for the players to wait while a world is being reset.
+  #      Which world is the Main World? It is defined after `level-name=` in `server.properties` file.
+  #   2. All players must be moved to the Main World before the world reset process starts.
+  #      You can do this by running `minecraft:teleport` command, as shown in examples below.
+  #   3. The Server Lock must be enabled before the world reset process starts
+  #      so that players will not join the server while the process is ongoing.
+  #      You can do this by running `worldreset serverlock true` command.
+  #   4. The Server Lock should be disabled after all the processes completed.
+  #      You can do this by running `worldreset serverlock false` command.
+  #
+  # There are also some internal mechanisms implemented by this plugin to help
+  # the world reset process goes through smoothly. They are listed here FYI:
+  #   1. Server Lock
+  #      When it is enabled,
+  #        players are not allowed to join the server;
+  #        players are not allowed to receive damage (they are temporarily invincible);
+  #        players cannot teleport to anywhere except the Main World.
+  #   2. World Locks
+  #      Not actually in use yet.
+  #   3. Placeholders
+  #      Support both PlaceholderAPI and MiniPlaceholders.
+  #      Support cross-server placeholders.
+  #         Install WorldReset.jar in the server where the worlds need reset.
+  #         Install WorldReset-Slave.jar in the server where the worlds need not reset, but placeholders are needed.
+  #         The WorldReset-Slave.jar will communicate with WorldReset.jar to remotely get the placeholder values.
+  #      Document not finished yet.
+
+  world_reset/resrc:
+    type: WORLD_RESET # The <WORLD_RESET> schedule type resets a specified world.
+    cron: "0 12 * * FRI"
+    name: resrc # The name of the world which will be reset. CASE-SENSITIVE.
+    keep_seed: false # Whether to reset the world seed for the world reset.
+    environment: NORMAL
+    pre_commands: # Commands executing before the process.
+      - "worldreset:worldreset serverlock true"
+      - "minecraft:execute as @a in overworld run tp @a 0 100 0 0 0"
+    post_commands: # Commands executing after the process.
+      - "minecraft:execute in resrc run worldborder set 4000"
+      - "minecraft:execute in resrc run worldborder center 0 0"
+
+  world_reset/resrc_nether:
+    type: WORLD_RESET
+    cron: "1 12 * * FRI"
+    name: resrc_nether
+    keep_seed: false
+    environment: NETHER
+    pre_commands: [ ]
+    post_commands:
+      - "minecraft:execute in resrc_nether run worldborder set 4000"
+      - "minecraft:execute in resrc_nether run worldborder center 0 0"
+
+  world_reset/resrc_the_end:
+    type: WORLD_RESET
+    cron: "2 12 * * FRI"
+    name: resrc_the_end
+    keep_seed: false
+    environment: THE_END
+    pre_commands: [ ]
+    post_commands:
+      - "minecraft:execute in resrc_the_end run worldborder set 4000"
+      - "minecraft:execute in resrc_the_end run worldborder center 0 0"
+      - "worldreset:worldreset serverlock false"

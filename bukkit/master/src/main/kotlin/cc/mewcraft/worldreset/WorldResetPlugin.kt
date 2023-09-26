@@ -1,0 +1,60 @@
+package cc.mewcraft.worldreset
+
+import cc.mewcraft.mewcore.plugin.MeowJavaPlugin
+import cc.mewcraft.worldreset.command.PluginCommands
+import cc.mewcraft.worldreset.listener.PlayerListener
+import cc.mewcraft.worldreset.listener.WorldListener
+import cc.mewcraft.worldreset.manager.*
+import cc.mewcraft.worldreset.messenger.MasterPluginMessenger
+import cc.mewcraft.worldreset.placeholder.MiniPlaceholderExtension
+import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
+import me.lucko.helper.Helper
+import me.lucko.helper.Schedulers
+import me.lucko.helper.messaging.Messenger
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger
+import java.util.concurrent.TimeUnit
+
+class WorldResetPlugin : MeowJavaPlugin() {
+    lateinit var settings: WorldResetSettings private set
+    lateinit var schedules: Schedules private set
+    lateinit var serverLocks: ServerLocks private set
+    lateinit var worldLocks: WorldLocks private set
+
+    override fun enable() {
+        // TODO use Koin to better manage DI
+        // Right now It's totally a mess ...
+
+        /* Initialize managers */
+        serverLocks = LocalServerLocks
+        worldLocks = LocalWorldLocks
+        settings = WorldResetSettings()
+        schedules = LocalSchedules(settings).apply { bind(this) }
+
+        /* Initialize messenger */
+        val messenger = Helper.serviceNullable(Messenger::class.java) ?: run {
+            logger.severe("No messenger instance is provided. Is 'helper-redis' installed?")
+            logger.severe("The plugin will not work without it. Shutting down ...")
+            server.pluginManager.disablePlugin(this)
+            return
+        }
+        MasterPluginMessenger(messenger, schedules, serverLocks).bindWith(this)
+
+        /* Register listeners */
+        PlayerListener(serverLocks, worldLocks).also { registerListener(it).bindWith(this) }
+        WorldListener(serverLocks, worldLocks).also { registerListener(it).bindWith(this) }
+
+        /* Register expansions */
+        MiniPlaceholderExtension(schedules, serverLocks).also { bind(it).register() }
+        PlaceholderAPIExtension(schedules, serverLocks).also { bind(it).register() }
+
+        /* Register commands */
+        PluginCommands(serverLocks).prepareAndRegister()
+
+        // Start schedules after "Done"
+        Schedulers.sync().runLater({ schedules.start() }, 10, TimeUnit.SECONDS)
+    }
+}
+
+val logger: ComponentLogger by lazy { plugin.componentLogger }
+
+val plugin: WorldResetPlugin by lazy { Helper.plugins().getPlugin("WorldReset") as WorldResetPlugin }
