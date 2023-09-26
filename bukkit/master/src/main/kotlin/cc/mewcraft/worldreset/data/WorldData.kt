@@ -76,12 +76,8 @@ class WorldData(
 
         // Prepare the WorldCreator of new world.
         // We must prepare the WorldCreator before the old world is unloaded.
-        val seed =
-            if (keepSeed) oldWorld.seed
-            else Random.nextLong()
-        val worldCreator = WorldCreator(name)
-            .copy(oldWorld)
-            .seed(seed)
+        val seed = if (keepSeed) oldWorld.seed else Random.nextLong()
+        val worldCreator = WorldCreator(name).environment(environment).seed(seed)
 
         logger.info("<light_purple>World creator of new world is ready: `$name`.".mini())
 
