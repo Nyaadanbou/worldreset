@@ -1,6 +1,6 @@
 package cc.mewcraft.worldreset.manager
 
-import cc.mewcraft.worldreset.messenger.SlavePluginMessenger
+import cc.mewcraft.worldreset.message.SlavePluginMessenger
 import cc.mewcraft.worldreset.util.throwUnsupportedException
 import me.lucko.helper.cache.Expiring
 import java.util.concurrent.TimeUnit
@@ -24,7 +24,7 @@ class RemoteServerLocks(
     override fun isLocked(): Boolean {
         val promise = cachedStatus.get()
         return if (promise.isDone) {
-            promise.join()
+            promise.join().lockStatus
         } else {
             // If the result is not yet calculated,
             // we return `true` for temporary value.

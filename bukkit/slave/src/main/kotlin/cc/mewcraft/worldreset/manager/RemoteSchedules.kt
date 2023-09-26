@@ -1,6 +1,6 @@
 package cc.mewcraft.worldreset.manager
 
-import cc.mewcraft.worldreset.messenger.SlavePluginMessenger
+import cc.mewcraft.worldreset.message.SlavePluginMessenger
 import cc.mewcraft.worldreset.schedule.EmptySchedule
 import cc.mewcraft.worldreset.schedule.RemoteSchedule
 import cc.mewcraft.worldreset.schedule.Schedule
@@ -20,7 +20,7 @@ class RemoteSchedules(
             .build(CacheLoader.asyncReloading(object : CacheLoader<String, RemoteSchedule>() {
                 override fun load(key: String): RemoteSchedule {
                     val scheduleData = pluginMessenger.requestSchedule(key).join()
-                    return RemoteSchedule(key, scheduleData.timeToNextExecution)
+                    return RemoteSchedule(key, scheduleData.nextExecution)
                 }
             }, HelperExecutors.asyncBukkit()))
 

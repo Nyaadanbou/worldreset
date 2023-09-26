@@ -5,7 +5,7 @@ import cc.mewcraft.worldreset.command.PluginCommands
 import cc.mewcraft.worldreset.listener.PlayerListener
 import cc.mewcraft.worldreset.listener.WorldListener
 import cc.mewcraft.worldreset.manager.*
-import cc.mewcraft.worldreset.messenger.MasterPluginMessenger
+import cc.mewcraft.worldreset.message.MasterPluginMessenger
 import cc.mewcraft.worldreset.placeholder.MiniPlaceholderExtension
 import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
 import me.lucko.helper.Helper

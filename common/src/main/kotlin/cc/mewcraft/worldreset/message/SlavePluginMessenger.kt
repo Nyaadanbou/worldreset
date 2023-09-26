@@ -1,4 +1,4 @@
-package cc.mewcraft.worldreset.messenger
+package cc.mewcraft.worldreset.message
 
 import me.lucko.helper.messaging.Messenger
 import me.lucko.helper.messaging.conversation.ConversationReplyListener
@@ -37,14 +37,14 @@ class SlavePluginMessenger(
         return promise
     }
 
-    fun queryServerLock(): Promise<Boolean> {
-        val promise = Promise.empty<Boolean>()
+    fun queryServerLock(): Promise<ServerLockData> {
+        val promise = Promise.empty<ServerLockData>()
 
         serverLockChannel.sendMessage(
             QueryServerLockRequest(),
             object : ConversationReplyListener<QueryServerLockResponse> {
                 override fun onReply(reply: QueryServerLockResponse): ConversationReplyListener.RegistrationAction {
-                    promise.supply(reply.status)
+                    promise.supply(reply.serverLockData)
                     return ConversationReplyListener.RegistrationAction.STOP_LISTENING
                 }
 

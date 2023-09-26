@@ -22,6 +22,7 @@ class PlayerListener(
     @EventHandler(priority = EventPriority.LOWEST)
     fun onLogin(e: AsyncPlayerPreLoginEvent) {
         /* Kick player if server lock is enabled */
+
         if (serverLocks.isLocked()) e.disallow(
             /* result = */ AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
             /* message = */ "<red>World Reset in Progress".mini()
@@ -52,6 +53,7 @@ class PlayerListener(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onDamage(e: EntityDamageEvent) {
         /* Cancel player damage if the server is locked */
+
         if (e.entity !is Player) return
         if (serverLocks.isLocked()) {
             e.isCancelled = true

@@ -5,7 +5,7 @@ import cc.mewcraft.worldreset.manager.RemoteSchedules
 import cc.mewcraft.worldreset.manager.RemoteServerLocks
 import cc.mewcraft.worldreset.manager.Schedules
 import cc.mewcraft.worldreset.manager.ServerLocks
-import cc.mewcraft.worldreset.messenger.SlavePluginMessenger
+import cc.mewcraft.worldreset.message.SlavePluginMessenger
 import cc.mewcraft.worldreset.placeholder.MiniPlaceholderExtension
 import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
 import me.lucko.helper.Services

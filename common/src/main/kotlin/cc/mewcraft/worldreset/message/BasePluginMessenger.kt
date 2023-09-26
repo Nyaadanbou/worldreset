@@ -1,4 +1,4 @@
-package cc.mewcraft.worldreset.messenger
+package cc.mewcraft.worldreset.message
 
 import me.lucko.helper.messaging.Messenger
 import me.lucko.helper.messaging.conversation.ConversationChannel

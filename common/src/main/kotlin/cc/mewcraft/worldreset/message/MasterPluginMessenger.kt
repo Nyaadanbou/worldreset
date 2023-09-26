@@ -1,4 +1,4 @@
-package cc.mewcraft.worldreset.messenger
+package cc.mewcraft.worldreset.message
 
 import cc.mewcraft.worldreset.manager.Schedules
 import cc.mewcraft.worldreset.manager.ServerLocks
@@ -29,7 +29,7 @@ class MasterPluginMessenger(
         serverLockChannel.newAgent().addListener { _, message ->
             val promise = Promise.empty<QueryServerLockResponse>()
             val status = serverLocks.isLocked()
-            promise.supply(QueryServerLockResponse(message.conversationId, status))
+            promise.supply(QueryServerLockResponse(message.conversationId, ServerLockData(status)))
             ConversationReply.ofPromise(promise)
         }
     }
