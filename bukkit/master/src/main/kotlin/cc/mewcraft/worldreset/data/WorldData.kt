@@ -74,8 +74,9 @@ class WorldData(
 
         logger.info("<light_purple>Old world is loaded: `$name` (or it is already loaded).".mini())
 
-        // Prepare the WorldCreator of new world.
-        // We must prepare the WorldCreator before the old world is unloaded.
+        // Prepare a WorldCreator of the new world.
+        // We must have a WorldCreator before the old world is unloaded.
+        // Otherwise, we will not be able to get the data about old world.
         val seed = if (keepSeed) oldWorld.seed else Random.nextLong()
         val worldCreator = WorldCreator(name).environment(environment).seed(seed)
 
