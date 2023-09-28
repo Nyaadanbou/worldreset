@@ -25,19 +25,19 @@ class PlayerListener(
 
         if (serverLocks.isLocked()) e.disallow(
             /* result = */ AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-            /* message = */ "<red>World Reset in Progress".mini()
+            /* message = */ "<red>世界正在重置".mini()
         )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onWorldChange(e: PlayerTeleportEvent) {
-        /* Cancel teleport if server lock is enabled */
-        // Except the target world is the main world.
+        /* Cancel teleport if server lock is enabled, except the target world is the main world */
 
         if (serverLocks.isLocked()) {
             val toWorld = runCatching { e.to.world }.getOrNull()
             if (toWorld == null || toWorld.key() != OVERWORLD_KEY) {
                 e.isCancelled = true
+                e.player.sendRichMessage("<#ff7e53>世界正在重置，请稍等片刻再进行传送。本次传送已取消！")
                 logger.info("PlayerTeleportEvent was cancelled: ${e.player.name};${toWorld?.name}")
             }
         }
@@ -57,6 +57,7 @@ class PlayerListener(
         if (e.entity !is Player) return
         if (serverLocks.isLocked()) {
             e.isCancelled = true
+            e.entity.sendRichMessage("<#ff7e53>世界正在重置，所有玩家暂时获得无敌状态。已免疫当前伤害！")
             logger.info("EntityDamageEvent was cancelled: ${e.entity.name}")
         }
     }

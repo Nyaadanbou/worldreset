@@ -14,7 +14,7 @@ abstract class LocalSchedule(
     override val cron: Cron
         get() = cronData.cron
 
-    override fun timeToNextExecution(): Duration? {
+    override fun nextExecution(): Duration? {
         return ExecutionTime.forCron(cronData.cron).timeToNextExecution(ZonedDateTime.now()).getOrNull()
     }
 }

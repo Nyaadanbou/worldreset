@@ -22,8 +22,8 @@ class MasterPluginMessenger(
         scheduleChannel.newAgent().addListener { _, message ->
             val promise = Promise.empty<GetScheduleResponse>()
             val schedule = schedules.get(message.name)
-            val timeToNextExecution = schedule.timeToNextExecution() ?: Duration.ZERO
-            promise.supply(GetScheduleResponse(message.conversationId, ScheduleData(timeToNextExecution)))
+            val nextExecution = schedule.nextExecution() ?: Duration.ZERO
+            promise.supply(GetScheduleResponse(message.conversationId, ScheduleData(nextExecution)))
             ConversationReply.ofPromise(promise)
         }
         serverLockChannel.newAgent().addListener { _, message ->

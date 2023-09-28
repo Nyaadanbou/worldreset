@@ -21,8 +21,8 @@ class MiniPlaceholderExtension(
         .audiencePlaceholder("countdown") { _, queue, _ ->
             val name = queue.pop().value()
             val schedule = schedules.get(name)
-            val timeToNextExecution = schedule.timeToNextExecution() ?: return@audiencePlaceholder NEVER_REACH
-            val format = DurationFormatter.MINUTES.format(timeToNextExecution)
+            val nextExecution = schedule.nextExecution() ?: return@audiencePlaceholder NEVER_REACH
+            val format = DurationFormatter.MINUTES.format(nextExecution)
             Tag.preProcessParsed(format)
         }
         .audiencePlaceholder("serverlock") { _, _, _ ->

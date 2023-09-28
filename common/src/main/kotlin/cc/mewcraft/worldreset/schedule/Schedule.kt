@@ -19,5 +19,5 @@ interface Schedule {
      * Returns the duration to next execution if there is any,
      * or `null` if the next execution can never be reached.
      */
-    fun timeToNextExecution(): Duration?
+    fun nextExecution(): Duration?
 }

@@ -37,8 +37,8 @@ class PlaceholderAPIExtension(
                 val size = args.size
                 if (size == 1) {
                     val schedule = schedules.get(args[0])
-                    val timeToNextExecution = schedule.timeToNextExecution() ?: return NEVER_REACH
-                    DurationFormatter.MINUTES.format(timeToNextExecution)
+                    val nextExecution = schedule.nextExecution() ?: return NEVER_REACH
+                    DurationFormatter.MINUTES.format(nextExecution)
                 } else throw IllegalArgumentException(params)
             } else if (params.startsWith("serverlock")) {
                 if (serverLocks.isLocked()) {

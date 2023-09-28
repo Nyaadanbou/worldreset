@@ -16,7 +16,7 @@ schedules:
     type: COMMAND
     cron: "10 12 * * FRI"
     commands:
-      - "[game-command] say This is a random console command."
+      - "[console-cmd] say This is a random console command."
 
   broadcast/countdown_10m:
     type: BROADCAST # The <BROADCAST> schedule type broadcasts messages to the whole server.
@@ -79,12 +79,12 @@ schedules:
     environment: NORMAL
     pre_commands: # Commands executing before the process.
       - "[delete-file] plugins/CustomStructures/data"
-      - "[game-command] customstructures:cstruct reload"
-      - "[game-command] worldreset:worldreset serverlock true"
-      - "[game-command] minecraft:execute as @a in overworld run tp @a 0 100 0 0 0"
+      - "[console-cmd] customstructures:cstruct reload"
+      - "[console-cmd] worldreset:worldreset serverlock true"
+      - "[console-cmd] minecraft:execute as @a in overworld run tp @a 0 100 0 0 0"
     post_commands: # Commands executing after the process.
-      - "[game-command] minecraft:execute in resrc run worldborder set 4000"
-      - "[game-command] minecraft:execute in resrc run worldborder center 0 0"
+      - "[console-cmd] minecraft:execute in resrc run worldborder set 4000"
+      - "[console-cmd] minecraft:execute in resrc run worldborder center 0 0"
 
   world_reset/resrc_nether:
     type: WORLD_RESET
@@ -94,8 +94,8 @@ schedules:
     environment: NETHER
     pre_commands: [ ]
     post_commands:
-      - "[game-command] minecraft:execute in resrc_nether run worldborder set 4000"
-      - "[game-command] minecraft:execute in resrc_nether run worldborder center 0 0"
+      - "[console-cmd] minecraft:execute in resrc_nether run worldborder set 4000"
+      - "[console-cmd] minecraft:execute in resrc_nether run worldborder center 0 0"
 
   world_reset/resrc_the_end:
     type: WORLD_RESET
@@ -105,6 +105,6 @@ schedules:
     environment: THE_END
     pre_commands: [ ]
     post_commands:
-      - "[game-command] minecraft:execute in resrc_the_end run worldborder set 4000"
-      - "[game-command] minecraft:execute in resrc_the_end run worldborder center 0 0"
-      - "[game-command] worldreset:worldreset serverlock false"
+      - "[console-cmd] minecraft:execute in resrc_the_end run worldborder set 4000"
+      - "[console-cmd] minecraft:execute in resrc_the_end run worldborder center 0 0"
+      - "[console-cmd] worldreset:worldreset serverlock false"
