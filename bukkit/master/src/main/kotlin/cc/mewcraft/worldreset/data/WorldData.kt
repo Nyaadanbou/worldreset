@@ -138,7 +138,7 @@ private fun isMainWorld(name: String): Boolean =
  * Throws an [IllegalStateException] if the server is ticking worlds.
  */
 private fun throwIfTickingWorlds() {
-    if (plugin.server.isTickingWorlds) throw IllegalStateException()
+    if (plugin.server.isTickingWorlds) error("Worlds are being ticked")
 }
 
 /**
