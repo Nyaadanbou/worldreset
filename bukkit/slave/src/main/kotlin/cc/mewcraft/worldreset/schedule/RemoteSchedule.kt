@@ -13,6 +13,6 @@ class RemoteSchedule(
     override suspend fun execute(): Unit =
         throwUnsupportedException()
 
-    override fun timeToNextExecution(): Duration? =
+    override fun nextExecution(): Duration? =
         timeToNextExecution
 }

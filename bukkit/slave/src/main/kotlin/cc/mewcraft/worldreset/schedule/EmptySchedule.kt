@@ -13,6 +13,6 @@ object EmptySchedule : Schedule {
     override suspend fun execute(): Unit =
         throwUnsupportedException()
 
-    override fun timeToNextExecution(): Duration =
+    override fun nextExecution(): Duration =
         Duration.ZERO
 }
