@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 class WorldResetSchedule(
     name: String,
     cron: CronData,
-    private val worldData: WorldData,
+    val worldData: WorldData,
     private val preCommandData: CommandData,
     private val postCommandData: CommandData,
 ) : LocalSchedule(

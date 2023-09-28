@@ -41,7 +41,7 @@ private class SingleCommandData(
 
     init {
         val result: MatchResult = regex.matchEntire(command) ?: error("Malformed command: `$command`")
-        type = result.groups["CommandType"]?.value?.trim()?.let { CommandType.match(it) } ?: error("Failed to extract CommandType: `$command`")
+        type = result.groups["CommandType"]?.value?.let { CommandType.match(it) } ?: error("Failed to extract CommandType: `$command`")
         data = result.groups["CommandData"]?.value?.trim() ?: error("Failed to extract CommandData: `$command`")
     }
 
@@ -57,17 +57,13 @@ private class SingleCommandData(
             }
 
             DELETE_FILE -> {
-                val root = requireNotNull(plugin.server.pluginsFolder.parent) { "Should never happen, unless the default `plugins` folder is moved" }
-                val input = Path(data.removePrefix("/")) // Force convert to relative path
-                val target = Path(root).resolve(input)
-                val file = target.toFile()
+                val file = Path(data).toFile()
                 logger.info("Deleting file: ${file.path}")
                 file.deleteRecursively()
                 logger.info("Deleted file: ${file.path}")
             }
         }
     }
-
 }
 
 private enum class CommandType {
@@ -77,9 +73,8 @@ private enum class CommandType {
 
     companion object {
         fun match(value: String): CommandType =
-            valueOf(value.uppercase())
+            valueOf(value.uppercase().replace('-', '_'))
     }
-
 }
 
 private fun isRegistered(command: String) =

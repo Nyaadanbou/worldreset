@@ -16,18 +16,23 @@ class LocalSchedules(
     private lateinit var scheduler: CronScheduler
     private lateinit var scheduleMap: Map<String, Schedule>
 
+    override val schedules: Sequence<Schedule>
+        get() = scheduleMap.values.asSequence()
+
+    override fun load() {
+        logger.info("<aqua>Loading schedules for scheduler.".mini())
+        scheduleMap = settings.schedules.associateBy { it.name }
+        logger.info("<aqua>Loaded ${scheduleMap.size} schedules from file.".mini())
+    }
+
     override fun start() {
         logger.info("<aqua>Starting scheduler.".mini())
 
         scheduler = CronScheduler()
-        scheduleMap = settings.schedules.associateBy { it.name }
-        scheduleMap.forEach { add(it.value) }
-
-        logger.info("<aqua>Loaded ${scheduleMap.size} schedules from file.".mini())
-        logger.info("<aqua>Attempting to start scheduler.".mini())
+        scheduleMap.values.forEach { add(it) } // Add it to the scheduler
+        logger.info("<aqua>Added ${scheduleMap.size} schedules to scheduler.".mini())
 
         scheduler.startPollingTask()
-
         logger.info("<aqua>Scheduler has started! Any errors are reported above.".mini())
     }
 

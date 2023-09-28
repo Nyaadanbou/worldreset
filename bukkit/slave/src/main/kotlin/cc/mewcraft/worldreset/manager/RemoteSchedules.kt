@@ -24,6 +24,9 @@ class RemoteSchedules(
                 }
             }, HelperExecutors.asyncBukkit()))
 
+    override fun load(): Unit =
+        throwUnsupportedException()
+
     override fun start(): Unit =
         throwUnsupportedException()
 

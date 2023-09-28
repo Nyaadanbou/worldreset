@@ -16,7 +16,7 @@ class WorldData(
     /**
      * Name of the world. Case-sensitive.
      */
-    private val name: String,
+    val name: String,
     /**
      * Whether to keep the old world seed.
      */
@@ -26,7 +26,12 @@ class WorldData(
      */
     environment: String,
 ) {
-    private val environment = Environment.valueOf(environment)
+    val isMainWorld: Boolean
+        get() = name == plugin.server.worlds[0].name // This should generally work
+    val isWorldDirectoryExisting: Boolean
+        get() = plugin.server.worldContainer.toPath().resolve(name).exists()
+
+    private val environment: Environment = Environment.valueOf(environment)
 
     /**
      * Resets this world.
@@ -40,15 +45,13 @@ class WorldData(
         ////// Start
 
         // Check if the world is the main world.
-        if (isMainWorld(name)) {
+        if (isMainWorld) {
             logger.error("Aborting: cannot reset main world: `$name`")
             return false
         }
 
-        val worldContainer = plugin.server.worldContainer
-
         // If the world folder does not exist, create a new world.
-        if (!worldContainer.toPath().resolve(name).exists()) {
+        if (!isWorldDirectoryExisting) {
             logger.info("<light_purple>World does not already exist: `$name`. A new world will be created.".mini())
             logger.info("<light_purple>Attempting to create new world: `$name`.".mini())
 
@@ -80,7 +83,7 @@ class WorldData(
         val seed = if (keepSeed) oldWorld.seed else Random.nextLong()
         val worldCreator = WorldCreator(name).environment(environment).seed(seed)
 
-        logger.info("<light_purple>World creator of new world is ready: `$name`.".mini())
+        logger.info("<light_purple>World creator for new world is ready: `$name`.".mini())
 
         // Try unloading the old world.
         val isOldWorldUnloaded = attempt {
@@ -99,7 +102,7 @@ class WorldData(
         // The old world is now unloaded.
         // Let's delete the files inside the old world folder.
         logger.info("<light_purple>Start deleting old world files: `$name`.".mini())
-        if (!deleteWorldFolderContents(oldWorldFolder)) {
+        if (!deleteWorldDirectoryContents(oldWorldFolder)) {
             logger.error("Aborting: failed to delete old world files. See above for more details.")
             return false
         }
@@ -129,12 +132,6 @@ class WorldData(
 }
 
 /**
- * Checks if the world [name] is main world.
- */
-private fun isMainWorld(name: String): Boolean =
-    name == plugin.server.worlds[0].name // This should generally work
-
-/**
  * Throws an [IllegalStateException] if the server is ticking worlds.
  */
 private fun throwIfTickingWorlds() {
@@ -144,7 +141,7 @@ private fun throwIfTickingWorlds() {
 /**
  * Deletes contents of a world folder, except for the paper world config.
  */
-private fun deleteWorldFolderContents(folder: File): Boolean {
+private fun deleteWorldDirectoryContents(folder: File): Boolean {
     val listFiles = folder.listFiles() ?: return false
     for (file in listFiles) {
         if (file.nameWithoutExtension == "paper-world") {
