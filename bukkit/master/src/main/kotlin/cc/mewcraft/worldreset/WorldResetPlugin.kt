@@ -21,6 +21,7 @@ class WorldResetPlugin : MeowJavaPlugin() {
     lateinit var schedules: Schedules private set
     lateinit var serverLocks: ServerLocks private set
     lateinit var worldLocks: WorldLocks private set
+    lateinit var worldAutoLoader: WorldAutoLoader private set
 
     override fun load() {
         /* Initialize managers (independent) */
@@ -36,8 +37,11 @@ class WorldResetPlugin : MeowJavaPlugin() {
         settings = WorldResetSettings()
         schedules = LocalSchedules(settings).also {
             bind(it)
-            it.load() // Load schedules from files (tasks not starting yet)
-            WorldAutoLoader(it).load() // Load custom worlds specified in the schedules
+            it.load() // Load schedules from files
+        }
+        worldAutoLoader = WorldAutoLoader(schedules).also {
+            bind(it)
+            it.load() // Load custom worlds specified in the schedules
         }
 
         /* Initialize messenger */

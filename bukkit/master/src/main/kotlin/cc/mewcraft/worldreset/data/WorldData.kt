@@ -26,12 +26,12 @@ class WorldData(
      */
     environment: String,
 ) {
+    private val environment: Environment = Environment.valueOf(environment)
+
     val isMainWorld: Boolean
         get() = name == plugin.server.worlds[0].name // This should generally work
     val isWorldDirectoryExisting: Boolean
         get() = plugin.server.worldContainer.toPath().resolve(name).exists()
-
-    private val environment: Environment = Environment.valueOf(environment)
 
     /**
      * Resets this world.
