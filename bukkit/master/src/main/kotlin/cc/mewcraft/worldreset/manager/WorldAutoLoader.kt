@@ -45,8 +45,10 @@ class WorldAutoLoader(
         logger.info("$PREFIX Loaded ${worldInfoList?.size ?: 0} world info.")
 
         for (data in worldDataSequence) {
-            if (data.isMainWorld)
+            if (data.isMainWorld) {
                 logger.info("$PREFIX World is main world: `${data.name}`. Skipped.")
+                continue
+            }
 
             if (data.isWorldDirectoryExisting) {
                 logger.info("$PREFIX World directory exists: `${data.name}`. Trying to load it.")
