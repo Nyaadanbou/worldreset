@@ -9,9 +9,9 @@ version = "1.0.0"
 description = "Reset server worlds with cron expressions!"
 
 dependencies {
-    // server api
+    // server
     compileOnly(libs.proxy.velocity)
 
-    // libs that present as other plugins
+    // standalone plugins
     compileOnly(libs.minipapi)
 }

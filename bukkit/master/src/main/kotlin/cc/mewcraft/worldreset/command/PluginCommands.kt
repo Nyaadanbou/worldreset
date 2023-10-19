@@ -1,17 +1,16 @@
 package cc.mewcraft.worldreset.command
 
-import cc.mewcraft.mewcore.command.SimpleCommands
+import cc.mewcraft.spatula.command.SimpleCommands
 import cc.mewcraft.worldreset.manager.ServerLocks
 import cc.mewcraft.worldreset.plugin
 import cloud.commandframework.arguments.standard.BooleanArgument
-import org.bukkit.plugin.Plugin
 
 class PluginCommands(
     private val serverLocks: ServerLocks,
-) : SimpleCommands<Plugin>(plugin) {
-    override fun prepareAndRegister() {
-        registry.prepareCommand(
-            registry.commandBuilder("worldreset")
+) : SimpleCommands(plugin) {
+    override fun registerCommands() {
+        commandRegistry().addCommand(
+            commandRegistry().commandBuilder("worldreset")
                 .literal("serverlock")
                 .argument(BooleanArgument.builder("status"))
                 .permission("worldreset.command.admin")
@@ -21,8 +20,8 @@ class PluginCommands(
                     ctx.sender.sendRichMessage("Current server lock: ${status.toString().uppercase()}")
                 }.build()
         )
-        registry.prepareCommand(
-            registry.commandBuilder("worldreset")
+        commandRegistry().addCommand(
+            commandRegistry().commandBuilder("worldreset")
                 .literal("reload")
                 .permission("worldreset.command.admin")
                 .handler { ctx ->
@@ -32,6 +31,6 @@ class PluginCommands(
                 }.build()
         )
 
-        registry.registerCommands()
+        commandRegistry().registerCommands()
     }
 }

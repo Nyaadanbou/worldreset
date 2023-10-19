@@ -1,16 +1,14 @@
-group = "cc.mewcraft.worldreset"
-version = "1.0.0"
-description = "Reset server worlds with cron expressions!"
-
 dependencies {
-    // server api
+    // server
     compileOnly(libs.server.paper)
 
-    // plugin libs
+    // helper
     compileOnly(libs.helper)
+
+    // plugin libs
     compileOnly(libs.papi)
     compileOnly(libs.minipapi)
 
-    // shaded libs
+    // internal
     compileOnly(libs.cronutils)
 }

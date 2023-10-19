@@ -12,18 +12,19 @@ version = "1.1.0"
 description = "Reset server worlds with cron expressions!"
 
 dependencies {
-    implementation(project(":worldreset:common"))
-
-    // server api
+    // server
     compileOnly(libs.server.paper)
 
-    // plugin libs
-    compileOnly(project(":mewcore"))
+    // helper
     compileOnly(libs.helper)
+
+    // plugin libs
     compileOnly(libs.papi)
     compileOnly(libs.minipapi)
 
-    // shaded libs
+    // internal
+    implementation(project(":worldreset:common"))
+    implementation(project(":spatula:bukkit:command"))
     implementation(project(":cronscheduler"))
     implementation(libs.cronutils)
     implementation(libs.bundles.mccoroutine.bukkit) {
@@ -37,23 +38,18 @@ paper {
     version = "${project.version}"
     description = project.description
     apiVersion = "1.19"
-    authors = listOf("Nailm")
+    author = "Nailm"
 
     serverDependencies {
         register("Kotlin") {
             required = true
             joinClasspath = true
-            load = PaperPluginDescription.RelativeLoadOrder.OMIT
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
         register("helper") {
             required = true
             joinClasspath = true
-            load = PaperPluginDescription.RelativeLoadOrder.OMIT
-        }
-        register("MewCore") {
-            required = true
-            joinClasspath = true
-            load = PaperPluginDescription.RelativeLoadOrder.OMIT
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
         register("MiniPlaceholders") {
             required = false

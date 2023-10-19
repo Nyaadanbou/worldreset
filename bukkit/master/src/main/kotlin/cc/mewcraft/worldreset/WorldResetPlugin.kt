@@ -2,7 +2,6 @@
 
 package cc.mewcraft.worldreset
 
-import cc.mewcraft.mewcore.plugin.MeowJavaPlugin
 import cc.mewcraft.worldreset.command.PluginCommands
 import cc.mewcraft.worldreset.listener.PlayerListener
 import cc.mewcraft.worldreset.listener.WorldListener
@@ -13,10 +12,11 @@ import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
 import me.lucko.helper.Helper
 import me.lucko.helper.Schedulers
 import me.lucko.helper.messaging.Messenger
+import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import java.util.concurrent.TimeUnit
 
-class WorldResetPlugin : MeowJavaPlugin() {
+class WorldResetPlugin : ExtendedJavaPlugin() {
     lateinit var settings: WorldResetSettings private set
     lateinit var schedules: Schedules private set
     lateinit var serverLocks: ServerLocks private set
@@ -54,15 +54,15 @@ class WorldResetPlugin : MeowJavaPlugin() {
         MasterPluginMessenger(messenger, schedules, serverLocks).bindWith(this)
 
         /* Register listeners */
-        PlayerListener(serverLocks, worldLocks).also { registerListener(it).bindWith(this) }
-        WorldListener(serverLocks, worldLocks).also { registerListener(it).bindWith(this) }
+        PlayerListener(serverLocks, worldLocks).also { registerListener(it) }
+        WorldListener(serverLocks, worldLocks).also { registerListener(it) }
 
         /* Register expansions */
         MiniPlaceholderExtension(schedules, serverLocks).also { bind(it).register() }
         PlaceholderAPIExtension(schedules, serverLocks).also { bind(it).register() }
 
         /* Register commands */
-        PluginCommands(serverLocks).prepareAndRegister()
+        PluginCommands(serverLocks).registerCommands()
 
         // Start schedules after "Done"
         Schedulers.sync().runLater({ schedules.start() }, 10, TimeUnit.SECONDS)
