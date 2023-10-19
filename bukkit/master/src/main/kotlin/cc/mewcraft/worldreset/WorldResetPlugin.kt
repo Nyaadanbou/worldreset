@@ -54,8 +54,8 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         MasterPluginMessenger(messenger, schedules, serverLocks).bindWith(this)
 
         /* Register listeners */
-        PlayerListener(serverLocks, worldLocks).also { registerListener(it) }
-        WorldListener(serverLocks, worldLocks).also { registerListener(it) }
+        PlayerListener(serverLocks, worldLocks).also { registerTerminableListener(it).bindWith(this) }
+        WorldListener(serverLocks, worldLocks).also { registerTerminableListener(it).bindWith(this) }
 
         /* Register expansions */
         MiniPlaceholderExtension(schedules, serverLocks).also { bind(it).register() }
