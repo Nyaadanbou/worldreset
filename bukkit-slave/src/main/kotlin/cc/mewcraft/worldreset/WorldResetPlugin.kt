@@ -24,7 +24,11 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         scheduleManager = RemoteScheduleManager(slaveChannel)
 
         /* Register expansions */
-        MiniPlaceholderExtension(scheduleManager, serverLockManager).also { bind(it).register() }
-        PlaceholderAPIExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        if (isPluginPresent("PlaceholderAPI")) {
+            PlaceholderAPIExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        }
+        if (isPluginPresent("MiniPlaceholders")) {
+            MiniPlaceholderExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        }
     }
 }

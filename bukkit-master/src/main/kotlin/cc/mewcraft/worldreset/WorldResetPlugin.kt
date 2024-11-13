@@ -10,7 +10,6 @@ import cc.mewcraft.worldreset.manager.*
 import cc.mewcraft.worldreset.messaging.MasterChannel
 import cc.mewcraft.worldreset.placeholder.MiniPlaceholderExtension
 import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
-import me.lucko.helper.Helper
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class WorldResetPlugin : ExtendedJavaPlugin() {
     companion object Shared {
-        private var instance: WorldResetPlugin? = null
+        var instance: WorldResetPlugin? = null
     }
 
     lateinit var settings: WorldResetSettings
@@ -62,8 +61,12 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         WorldListener(serverLockManager, worldLockManager).also { registerTerminableListener(it).bindWith(this) }
 
         /* Register expansions */
-        MiniPlaceholderExtension(scheduleManager, serverLockManager).also { bind(it).register() }
-        PlaceholderAPIExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        if (isPluginPresent("PlaceholderAPI")) {
+            PlaceholderAPIExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        }
+        if (isPluginPresent("MiniPlaceholders")) {
+            MiniPlaceholderExtension(scheduleManager, serverLockManager).also { bind(it).register() }
+        }
 
         /* Register commands */
         PluginCommands(serverLockManager).registerCommands()
@@ -75,4 +78,4 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
 
 val logger: ComponentLogger by lazy { plugin.componentLogger }
 
-val plugin: WorldResetPlugin by lazy { Helper.plugins().getPlugin("WorldReset") as WorldResetPlugin }
+val plugin: WorldResetPlugin by lazy { WorldResetPlugin.instance ?: error("instance is not set yet") }
