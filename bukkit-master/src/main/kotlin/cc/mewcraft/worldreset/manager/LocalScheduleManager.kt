@@ -20,6 +20,7 @@ class LocalScheduleManager(
 
     override fun load() {
         logger.info("<aqua>Loading schedules for scheduler.".mini())
+        scheduler = CronScheduler()
         scheduleMap = settings.schedules.associateBy { it.name }
         logger.info("<aqua>Loaded ${scheduleMap.size} schedules from file.".mini())
     }
@@ -27,7 +28,6 @@ class LocalScheduleManager(
     override fun start() {
         logger.info("<aqua>Starting scheduler.".mini())
 
-        scheduler = CronScheduler()
         scheduleMap.values.forEach { add(it) } // Add it to the scheduler
         logger.info("<aqua>Added ${scheduleMap.size} schedules to scheduler.".mini())
 
