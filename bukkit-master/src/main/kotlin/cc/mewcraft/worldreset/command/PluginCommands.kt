@@ -12,9 +12,20 @@ import org.incendo.cloud.parser.standard.BooleanParser
 class PluginCommands(
     private val serverLockManager: ServerLockManager,
 ) {
+    companion object {
+        /**
+         * Whether the commands have been registered.
+         */
+        private var registered: Boolean = false
+    }
+
     private lateinit var manager: LegacyPaperCommandManager<CommandSender>
 
     fun registerCommands() {
+        if (registered) {
+            return
+        }
+
         manager = LegacyPaperCommandManager(plugin, ExecutionCoordinator.simpleCoordinator(), SenderMapper.identity())
         manager.registerBrigadier()
         manager.buildAndRegister("worldreset") {
@@ -38,5 +49,7 @@ class PluginCommands(
                 sender.sendRichMessage("WorldReset has been reloaded!")
             }
         }
+
+        registered = true
     }
 }
