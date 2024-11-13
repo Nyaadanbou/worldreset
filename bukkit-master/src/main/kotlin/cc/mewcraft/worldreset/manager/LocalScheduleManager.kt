@@ -2,10 +2,11 @@ package cc.mewcraft.worldreset.manager
 
 import cc.mewcraft.cronutils.CronScheduler
 import cc.mewcraft.cronutils.ExecutionStatus
-import cc.mewcraft.worldreset.WorldResetSettings
-import cc.mewcraft.worldreset.logger
+import cc.mewcraft.worldreset.*
 import cc.mewcraft.worldreset.schedule.Schedule
 import cc.mewcraft.worldreset.util.mini
+import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
+import kotlinx.coroutines.withContext
 import me.lucko.helper.terminable.Terminable
 
 class LocalScheduleManager(
@@ -41,7 +42,9 @@ class LocalScheduleManager(
     override fun add(schedule: Schedule) {
         scheduler.schedule(schedule.name, schedule.cron) {
             logger.info("<gold>Cron `${schedule.cron.asString()}` is triggered. Executing schedule: `${schedule.name}`".mini())
-            schedule.execute()
+            withContext(plugin.minecraftDispatcher) {
+                schedule.execute() // execute it on main thread // TODO provide config option to run it async
+            }
             logger.info("<gold>Execution of schedule `${schedule.name}` is completed.".mini())
             ExecutionStatus.SUCCESS
         }
