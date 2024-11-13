@@ -1,17 +1,21 @@
 plugins {
-    // id("cc.mewcraft.deploy-conventions") // TODO uncomment it when development starts
+    id("nyaadanbou-conventions.repositories")
+    id("nyaadanbou-conventions.copy-jar")
+    id("worldreset-conventions.commons")
 }
 
-project.ext.set("name", "WorldReset-Velocity")
-
 group = "cc.mewcraft.worldreset"
-version = "1.0.0"
+version = "0.0.1-SNAPSHOT"
 description = "Reset server worlds with cron expressions!"
 
 dependencies {
-    // server
-    compileOnly(libs.proxy.velocity)
+    compileOnly(local.velocity); kapt(local.velocity)
+    compileOnly(local.miniplaceholders)
+}
 
-    // standalone plugins
-    compileOnly(libs.minipapi)
+tasks {
+    copyJar {
+        environment = "velocity"
+        jarFileName = "worldreset-${project.version}.jar"
+    }
 }

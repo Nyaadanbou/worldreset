@@ -1,0 +1,52 @@
+[versions]
+
+shadow = "8.3.0"
+kotlin = "2.0.21"
+kotlinx-coroutines-core = "1.9.0"
+kotlinx-serialization-json = "1.7.3"
+koin = "4.0.0"
+paper = "1.21.1-R0.1-SNAPSHOT"
+velocity = "3.4.0-SNAPSHOT"
+guava = "33.2.1-jre"
+gson = "2.10.1"
+slf4j = "2.0.12"
+helper = "6.0.0"
+messenger = "0.0.1"
+cronscheduler = "0.0.1-SNAPSHOT"
+placeholderapi = "2.11.6"
+miniplaceholders = "2.2.3"
+
+[libraries]
+
+# Gradle plugins
+
+plugin-shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
+plugin-kotlin-jvm = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-kotlin-kapt = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
+plugin-nyaadanbou-conventions = { group = "cc.mewcraft.gradle", name = "conventions", version = "1.0-SNAPSHOT" }
+
+# Code dependencies
+
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+helper = { group = "me.lucko", name = "helper", version.ref = "helper" }
+messenger = { group = "cc.mewcraft.messenger", name = "common", version.ref = "messenger" }
+cronscheduler = { group = "cc.mewcraft.cronscheduler", name = "api", version.ref = "cronscheduler" }
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-test-junit5 = { group = "io.insert-koin", name = "koin-test-junit5", version.ref = "koin" }
+
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }
+
+[plugins]
+
+pluginyml-paper = { id = "net.minecrell.plugin-yml.paper", version = "0.6.0" }
