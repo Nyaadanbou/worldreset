@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package cc.mewcraft.worldreset
 
 import com.google.inject.Inject

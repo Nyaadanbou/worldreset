@@ -37,7 +37,7 @@ class PlaceholderAPIExtension(
                 val size = args.size
                 if (size == 1) {
                     val schedule = scheduleManager.get(args[0])
-                    val nextExecution = schedule.nextExecution() ?: return NEVER_REACH
+                    val nextExecution = schedule.timeUntilNextExecution ?: return NEVER_REACH
                     DurationFormatter.MINUTES.format(nextExecution)
                 } else throw IllegalArgumentException(params)
             } else if (params.startsWith("serverlock")) {
@@ -55,7 +55,10 @@ class PlaceholderAPIExtension(
     }
 
     override fun close() {
-        expansion.unregister()
+        @Suppress("SENSELESS_COMPARISON")
+        if (expansion.placeholderAPI != null) {
+            expansion.unregister()
+        }
     }
 }
 

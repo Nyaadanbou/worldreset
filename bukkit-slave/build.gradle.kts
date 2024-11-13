@@ -17,6 +17,7 @@ dependencies {
 
     compileOnly(local.paper)
     compileOnly(local.helper)
+    compileOnly(local.messenger)
     compileOnly(local.placeholderapi)
     compileOnly(local.miniplaceholders)
 }

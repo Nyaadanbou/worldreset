@@ -1,36 +1,42 @@
 package cc.mewcraft.worldreset.command
 
-import cc.mewcraft.spatula.command.SimpleCommands
 import cc.mewcraft.worldreset.manager.ServerLockManager
 import cc.mewcraft.worldreset.plugin
-import cloud.commandframework.arguments.standard.BooleanArgument
+import org.bukkit.command.CommandSender
+import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.execution.ExecutionCoordinator
+import org.incendo.cloud.kotlin.extension.buildAndRegister
+import org.incendo.cloud.paper.LegacyPaperCommandManager
+import org.incendo.cloud.parser.standard.BooleanParser
 
 class PluginCommands(
     private val serverLockManager: ServerLockManager,
-) : SimpleCommands(plugin) {
-    override fun registerCommands() {
-        commandRegistry().addCommand(
-            commandRegistry().commandBuilder("worldreset")
-                .literal("serverlock")
-                .argument(BooleanArgument.builder("status"))
-                .permission("worldreset.command.admin")
-                .handler { ctx ->
-                    val status = ctx.get<Boolean>("status")
-                    serverLockManager.setLock(status)
-                    ctx.sender.sendRichMessage("Current server lock: ${status.toString().uppercase()}")
-                }.build()
-        )
-        commandRegistry().addCommand(
-            commandRegistry().commandBuilder("worldreset")
-                .literal("reload")
-                .permission("worldreset.command.admin")
-                .handler { ctx ->
-                    plugin.onDisable()
-                    plugin.onEnable()
-                    ctx.sender.sendRichMessage("WorldReset has been reloaded!")
-                }.build()
-        )
+) {
+    private lateinit var manager: LegacyPaperCommandManager<CommandSender>
 
-        commandRegistry().registerCommands()
+    fun registerCommands() {
+        manager = LegacyPaperCommandManager(plugin, ExecutionCoordinator.simpleCoordinator(), SenderMapper.identity())
+        manager.registerBrigadier()
+        manager.buildAndRegister("worldreset") {
+            literal("serverlock")
+            required("status", BooleanParser.booleanParser())
+            permission = "worldreset.command.admin"
+            handler { ctx ->
+                val sender = ctx.sender()
+                val status = ctx.get<Boolean>("status")
+                serverLockManager.setLock(status)
+                sender.sendRichMessage("Current server lock: ${status.toString().uppercase()}")
+            }
+        }
+        manager.buildAndRegister("worldreset") {
+            literal("reload")
+            permission = "worldreset.command.admin"
+            handler { ctx ->
+                val sender = ctx.sender()
+                plugin.onDisable()
+                plugin.onEnable()
+                sender.sendRichMessage("WorldReset has been reloaded!")
+            }
+        }
     }
 }

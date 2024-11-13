@@ -6,9 +6,7 @@ import cc.mewcraft.worldreset.manager.WorldLockManager
 import cc.mewcraft.worldreset.util.mini
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
+import org.bukkit.event.*
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -29,7 +27,7 @@ class PlayerListener(
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onWorldChange(e: PlayerTeleportEvent) {
         /* Cancel teleport if server lock is enabled, except the target world is the main world */
 
@@ -37,7 +35,7 @@ class PlayerListener(
             val toWorld = runCatching { e.to.world }.getOrNull()
             if (toWorld == null || toWorld.key() != OVERWORLD_KEY) {
                 e.isCancelled = true
-                e.player.sendRichMessage("<#ff7e53>世界正在重置，请稍等片刻再进行传送。本次传送已取消！")
+                e.player.sendRichMessage("<#ff7e53>世界正在重置, 请稍等片刻再进行传送. 本次传送已取消!")
                 logger.info("PlayerTeleportEvent was cancelled: ${e.player.name};${toWorld?.name}")
             }
         }
@@ -50,15 +48,15 @@ class PlayerListener(
         // }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onDamage(e: EntityDamageEvent) {
         /* Cancel player damage if the server is locked */
 
         if (e.entity !is Player) return
         if (serverLockManager.isLocked()) {
             e.isCancelled = true
-            e.entity.sendRichMessage("<#ff7e53>世界正在重置，所有玩家暂时获得无敌状态。已免疫当前伤害！")
-            logger.info("EntityDamageEvent was cancelled: ${e.entity.name}")
+            e.entity.sendRichMessage("<#ff7e53>世界正在重置, 所有玩家暂时获得无敌状态. 已免疫当前伤害!")
+            logger.info("EntityDamageEvent was cancelled for ${e.entity.name}")
         }
     }
 }

@@ -1,18 +1,15 @@
 package cc.mewcraft.worldreset.schedule
 
-import cc.mewcraft.worldreset.util.throwUnsupportedException
+import cc.mewcraft.worldreset.util.throwAtSlave
 import java.time.Duration
 
 class RemoteSchedule(
     override val name: String,
-    private val timeToNextExecution: Duration?,
+    override val timeUntilNextExecution: Duration?,
 ) : Schedule {
     override val cron
-        get() = throwUnsupportedException()
+        get() = throwAtSlave()
 
     override suspend fun execute(): Unit =
-        throwUnsupportedException()
-
-    override fun nextExecution(): Duration? =
-        timeToNextExecution
+        throwAtSlave()
 }

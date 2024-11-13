@@ -1,47 +1,50 @@
 package cc.mewcraft.worldreset.manager
 
-import cc.mewcraft.worldreset.message.SlavePluginMessenger
-import cc.mewcraft.worldreset.schedule.EmptySchedule
-import cc.mewcraft.worldreset.schedule.RemoteSchedule
-import cc.mewcraft.worldreset.schedule.Schedule
-import cc.mewcraft.worldreset.util.throwUnsupportedException
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
-import me.lucko.helper.scheduler.HelperExecutors
+import cc.mewcraft.worldreset.messaging.ScheduleQueryResponse
+import cc.mewcraft.worldreset.messaging.SlaveChannel
+import cc.mewcraft.worldreset.schedule.*
+import cc.mewcraft.worldreset.util.throwAtSlave
+import com.google.common.cache.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 
 class RemoteScheduleManager(
-    private val pluginMessenger: SlavePluginMessenger,
+    private val slaveChannel: SlaveChannel,
 ) : ScheduleManager {
-    private val scheduleCache =
+
+    private val scheduleCache: LoadingCache<String, Deferred<ScheduleQueryResponse>> =
         CacheBuilder.newBuilder()
             .refreshAfterWrite(Duration.ofMinutes(1))
             .expireAfterWrite(Duration.ofMinutes(2))
-            .build(CacheLoader.asyncReloading(object : CacheLoader<String, RemoteSchedule>() {
-                override fun load(key: String): RemoteSchedule {
-                    val scheduleData = pluginMessenger.requestSchedule(key).join()
-                    return RemoteSchedule(key, scheduleData.nextExecution)
-                }
-            }, HelperExecutors.asyncBukkit()))
+            .build(CacheLoader.from { key ->
+                slaveChannel.requestScheduleAsync(key)
+            })
 
-    override fun load(): Unit =
-        throwUnsupportedException()
-
-    override fun start(): Unit =
-        throwUnsupportedException()
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun get(name: String): Schedule {
-        return if (name in scheduleCache.asMap()) {
-            scheduleCache[name]
+        val deferred = scheduleCache.getIfPresent(name)
+        if (deferred != null && deferred.isCompleted) {
+            val completed = deferred.getCompleted()
+            return RemoteSchedule(
+                completed.name,
+                completed.durationUntilNextExecution
+            )
         } else {
             // If the result is not yet cached,
             // we return a temporary empty value
             // and load the real value at the same time.
             scheduleCache.refresh(name)
-            EmptySchedule
+            return EmptySchedule
         }
     }
 
+    override fun load(): Unit =
+        throwAtSlave()
+
+    override fun start(): Unit =
+        throwAtSlave()
+
     override fun add(schedule: Schedule): Unit =
-        throwUnsupportedException()
+        throwAtSlave()
 }

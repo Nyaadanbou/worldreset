@@ -21,6 +21,7 @@ tasks {
     shadowJar {
         archiveClassifier.set("shaded")
         dependencies {
+            exclude("checkstyle.xml") // from cronutils
             exclude("META-INF/maven/**")
             exclude("META-INF/LICENSE*")
             exclude("META-INF/NOTICE*")
@@ -53,6 +54,7 @@ kotlin {
                 implementation(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
                 implementation(local.kotlinx.coroutines.core)
+                implementation(local.kotlinx.serialization.json)
             }
         }
     }

@@ -1,14 +1,12 @@
+@file:Suppress("unused")
+
 package cc.mewcraft.worldreset
 
-import cc.mewcraft.worldreset.manager.RemoteScheduleManager
-import cc.mewcraft.worldreset.manager.RemoteServerLockManager
-import cc.mewcraft.worldreset.manager.ScheduleManager
-import cc.mewcraft.worldreset.manager.ServerLockManager
-import cc.mewcraft.worldreset.message.SlavePluginMessenger
+import cc.mewcraft.messenger.redis.RedisProvider
+import cc.mewcraft.worldreset.manager.*
+import cc.mewcraft.worldreset.messaging.SlaveChannel
 import cc.mewcraft.worldreset.placeholder.MiniPlaceholderExtension
 import cc.mewcraft.worldreset.placeholder.PlaceholderAPIExtension
-import me.lucko.helper.Services
-import me.lucko.helper.messaging.Messenger
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 
 class WorldResetPlugin : ExtendedJavaPlugin() {
@@ -17,12 +15,13 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
 
     override fun enable() {
         /* Get the instance of messenger */
-        val messenger = Services.load(Messenger::class.java)
-        val slavePluginMessenger = SlavePluginMessenger(messenger).apply { bind(this) }
+        val messenger = RedisProvider.redisProvider().getRedis()
+        val slaveChannel = SlaveChannel(messenger)
+        slaveChannel.bindWith(this)
 
         /* Initialize managers */
-        serverLockManager = RemoteServerLockManager(slavePluginMessenger)
-        scheduleManager = RemoteScheduleManager(slavePluginMessenger)
+        serverLockManager = RemoteServerLockManager(slaveChannel)
+        scheduleManager = RemoteScheduleManager(slaveChannel)
 
         /* Register expansions */
         MiniPlaceholderExtension(scheduleManager, serverLockManager).also { bind(it).register() }

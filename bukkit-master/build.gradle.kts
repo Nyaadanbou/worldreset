@@ -5,6 +5,7 @@ plugins {
     id("nyaadanbou-conventions.copy-jar")
     id("worldreset-conventions.commons")
     kotlin("plugin.serialization")
+    id("org.jetbrains.kotlinx.atomicfu")
     alias(libs.plugins.pluginyml.paper)
 }
 
@@ -15,9 +16,15 @@ description = "Reset server worlds with cron expressions!"
 dependencies {
     implementation(project(":bukkit-common"))
     implementation(local.cronscheduler)
+    implementation(platform(libs.bom.cloud.paper))
+    implementation(platform(libs.bom.cloud.kotlin)) {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.jetbrains.kotlinx")
+    }
 
     compileOnly(local.paper)
     compileOnly(local.helper)
+    compileOnly(local.messenger)
     compileOnly(local.placeholderapi)
     compileOnly(local.miniplaceholders)
 }

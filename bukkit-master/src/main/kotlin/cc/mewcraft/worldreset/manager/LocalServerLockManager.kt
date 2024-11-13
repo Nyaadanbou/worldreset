@@ -3,7 +3,7 @@ package cc.mewcraft.worldreset.manager
 import kotlinx.atomicfu.atomic
 
 object LocalServerLockManager : ServerLockManager {
-    private val lock = atomic(false) /* true = lock is enabled */
+    private val lock = atomic(false) /* true = lock is active */
 
     override fun lock() {
         lock.value = true

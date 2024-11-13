@@ -7,7 +7,6 @@ import io.github.miniplaceholders.api.Expansion
 import me.lucko.helper.terminable.Terminable
 import net.kyori.adventure.text.minimessage.tag.Tag
 
-/* Constant Tags */
 private val LOCKED: Tag = Tag.preProcessParsed("LOCKED")
 private val UNLOCKED: Tag = Tag.preProcessParsed("UNLOCKED")
 private val NEVER_REACH: Tag = Tag.preProcessParsed("NEVER REACH")
@@ -21,7 +20,7 @@ class MiniPlaceholderExtension(
         .audiencePlaceholder("countdown") { _, queue, _ ->
             val name = queue.pop().value()
             val schedule = scheduleManager.get(name)
-            val nextExecution = schedule.nextExecution() ?: return@audiencePlaceholder NEVER_REACH
+            val nextExecution = schedule.timeUntilNextExecution ?: return@audiencePlaceholder NEVER_REACH
             val format = DurationFormatter.MINUTES.format(nextExecution)
             Tag.preProcessParsed(format)
         }
