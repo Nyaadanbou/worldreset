@@ -12,7 +12,7 @@ class UserDataManager(
 ) : Terminable {
 
     companion object {
-        private const val PRE_LOAD_AMOUNT = 200
+        private const val PRE_LOAD_AMOUNT = 1000
     }
 
     private val directoryOrCreate: File
@@ -73,7 +73,7 @@ class UserDataManager(
     }
 
     // 将所有缓存中的用户数据写回文件
-    private fun saveUserToFile() {
+    private fun saveEachUserToFile() {
         cache.asMap().values.forEach { userData ->
             saveUserToFile(userData)
         }
@@ -92,6 +92,14 @@ class UserDataManager(
         cache.put(id, newUserData)
     }
 
+    // 修改所有用户数据
+    fun modifyEachUser(modify: (UserData) -> UserData) {
+        cache.asMap().forEach { (id, userData) ->
+            val newUserData = modify(userData)
+            cache.put(id, newUserData)
+        }
+    }
+
     // 删除用户数据
     fun deleteUser(id: UUID): Boolean {
         if (cache.getIfPresent(id) != null) {
@@ -102,8 +110,6 @@ class UserDataManager(
                 // 从文件系统中删除
                 userFile.delete()
             }
-            // 将更新的数据写回文件
-            saveUserToFile()
             return true
         } else {
             return false
@@ -118,7 +124,7 @@ class UserDataManager(
 
     override fun close() {
         // 关闭时将所有用户数据写回文件
-        saveUserToFile()
+        saveEachUserToFile()
     }
 }
 

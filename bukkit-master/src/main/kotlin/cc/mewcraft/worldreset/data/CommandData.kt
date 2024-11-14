@@ -1,7 +1,6 @@
 package cc.mewcraft.worldreset.data
 
-import cc.mewcraft.worldreset.data.CommandType.CONSOLE_CMD
-import cc.mewcraft.worldreset.data.CommandType.DELETE_FILE
+import cc.mewcraft.worldreset.data.CommandType.*
 import cc.mewcraft.worldreset.logger
 import cc.mewcraft.worldreset.plugin
 import me.lucko.helper.Helper
@@ -32,6 +31,7 @@ private class SingleCommandData(
      * - `[delete-file] plugins/CustomStructures/data`
      * - `[console-cmd] customstructures reload`
      * - `[console-cmd] teleport @a 0 0 0 ~ ~`
+     * - `[reset-joined]` (no data)
      */
     command: String,
 ) {
@@ -62,13 +62,22 @@ private class SingleCommandData(
                 file.deleteRecursively()
                 logger.info("Deleted file: ${file.path}")
             }
+
+            RESET_JOINED -> {
+                plugin.userDataManager.modifyEachUser { it.copy(hasJoined = false) }
+            }
         }
+    }
+
+    fun isRegistered(command: String): Boolean {
+        return command.splitToSequence(" ").first() in plugin.server.commandMap.knownCommands
     }
 }
 
 private enum class CommandType {
     DELETE_FILE,
     CONSOLE_CMD,
+    RESET_JOINED,
     ;
 
     companion object {
@@ -76,6 +85,3 @@ private enum class CommandType {
             valueOf(value.uppercase().replace('-', '_'))
     }
 }
-
-private fun isRegistered(command: String) =
-    command.splitToSequence(" ").first() in plugin.server.commandMap.knownCommands
