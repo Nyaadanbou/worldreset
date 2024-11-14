@@ -1,4 +1,4 @@
-@file:Suppress("RedundantIf")
+@file:Suppress("RedundantIf", "MemberVisibilityCanBePrivate")
 
 package cc.mewcraft.worldreset.data
 
@@ -6,7 +6,7 @@ import cc.mewcraft.worldreset.logger
 import cc.mewcraft.worldreset.plugin
 import cc.mewcraft.worldreset.util.mini
 import kotlinx.coroutines.delay
-import org.bukkit.World.Environment
+import org.bukkit.World.*
 import org.bukkit.WorldCreator
 import java.io.File
 import kotlin.io.path.exists
@@ -20,16 +20,26 @@ class WorldData(
     /**
      * Whether to keep the old world seed.
      */
-    private val keepSeed: Boolean,
+    val keepSeed: Boolean,
     /**
      * The environment of the world.
      */
     environment: String,
 ) {
-    private val environment: Environment = Environment.valueOf(environment)
+    /**
+     * The environment of the world.
+     */
+    val environment: Environment = Environment.valueOf(environment)
 
+    /**
+     * Whether the world is the main world.
+     */
     val isMainWorld: Boolean
         get() = name == plugin.server.worlds[0].name // This should generally work
+
+    /**
+     * Whether the world directory exists.
+     */
     val isWorldDirectoryExisting: Boolean
         get() = plugin.server.worldContainer.toPath().resolve(name).exists()
 
@@ -129,68 +139,68 @@ class WorldData(
 
         return true
     }
-}
 
-/**
- * Throws an [IllegalStateException] if the server is ticking worlds.
- */
-private fun throwIfTickingWorlds() {
-    if (plugin.server.isTickingWorlds) error("Worlds are being ticked")
-}
+    /**
+     * Throws an [IllegalStateException] if the server is ticking worlds.
+     */
+    private fun throwIfTickingWorlds() {
+        if (plugin.server.isTickingWorlds) error("Worlds are being ticked")
+    }
 
-/**
- * Deletes contents of a world folder, except for the paper world config.
- */
-private fun deleteWorldDirectoryContents(folder: File): Boolean {
-    val listFiles = folder.listFiles() ?: return false
-    for (file in listFiles) {
-        if (file.nameWithoutExtension == "paper-world") {
-            logger.info("Skipping file: `${file.path}`.".mini())
-            continue
-        }
-        file.walkTopDown().forEach {
-            logger.info("Deleting file: `${it.path}`".mini())
-            if (!it.deleteRecursively()) {
-                logger.error("Failed to recursively delete file: `${it.path}`")
-                return false
+    /**
+     * Deletes contents of a world folder, except for the paper world config.
+     */
+    private fun deleteWorldDirectoryContents(folder: File): Boolean {
+        val listFiles = folder.listFiles() ?: return false
+        for (file in listFiles) {
+            if (file.nameWithoutExtension == "paper-world") {
+                logger.info("Skipping file: `${file.path}`.".mini())
+                continue
+            }
+            file.walkTopDown().forEach {
+                logger.info("Deleting file: `${it.path}`".mini())
+                if (!it.deleteRecursively()) {
+                    logger.error("Failed to recursively delete file: `${it.path}`")
+                    return false
+                }
             }
         }
+        return true
     }
-    return true
-}
 
-/**
- * Repeatedly calls the specified function [block] until it `succeeds` or `fails`,
- * returning the return value of function [block] if it `succeeds`, or `null` if
- * the function [block] `fails`.
- *
- * - `Succeeds` = the function [block] returns without exceptions in any call.
- * - `Fails` = the function [block] does not return in all attempts of call.
- *
- * **More specifications**
- *
- * The function [block] may manually indicate a failure by throwing an exception,
- * in which case the internal `counter` will be incremented by 1, and the function
- * [block] will be called again. When the `counter` reaches [tries] and the function
- * [block] still does not return without exceptions, the result will be `null`.
- */
-private suspend inline fun <T, R> T.attempt(
-    gap: Long = 10L,
-    tries: Int = 100,
-    block: T.() -> R,
-): R? {
-    var count = 0
-    var result: Result<R>
-    while (count < tries) {
-        result = runCatching(block)
-        count++
+    /**
+     * Repeatedly calls the specified function [block] until it `succeeds` or `fails`,
+     * returning the return value of function [block] if it `succeeds`, or `null` if
+     * the function [block] `fails`.
+     *
+     * - `Succeeds` = the function [block] returns without exceptions in any call.
+     * - `Fails` = the function [block] does not return in all attempts of call.
+     *
+     * **More specifications**
+     *
+     * The function [block] may manually indicate a failure by throwing an exception,
+     * in which case the internal `counter` will be incremented by 1, and the function
+     * [block] will be called again. When the `counter` reaches [tries] and the function
+     * [block] still does not return without exceptions, the result will be `null`.
+     */
+    private suspend inline fun <T, R> T.attempt(
+        gap: Long = 10L,
+        tries: Int = 100,
+        block: T.() -> R,
+    ): R? {
+        var count = 0
+        var result: Result<R>
+        while (count < tries) {
+            result = runCatching(block)
+            count++
 
-        if (result.isFailure) {
-            delay(gap)
-        } else {
-            // Exit the loop if success
-            return result.getOrThrow()
+            if (result.isFailure) {
+                delay(gap)
+            } else {
+                // Exit the loop if success
+                return result.getOrThrow()
+            }
         }
+        return null // Failed due to running out of tries
     }
-    return null // Failed due to running out of tries
 }
