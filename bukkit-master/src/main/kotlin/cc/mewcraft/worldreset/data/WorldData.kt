@@ -24,12 +24,13 @@ class WorldData(
     /**
      * The environment of the world.
      */
-    environment: String,
+    val environment: Environment,
 ) {
-    /**
-     * The environment of the world.
-     */
-    val environment: Environment = Environment.valueOf(environment)
+    constructor(
+        name: String,
+        keepSeed: Boolean,
+        environment: String,
+    ) : this(name, keepSeed, Environment.valueOf(environment))
 
     /**
      * Whether the world is the main world.
