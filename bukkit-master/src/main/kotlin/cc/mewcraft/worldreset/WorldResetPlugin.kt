@@ -30,6 +30,8 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         private set
     lateinit var worldAutoLoader: WorldAutoLoader
         private set
+    lateinit var userDataManager: UserDataManager
+        private set
 
     override fun load() {
         instance = this
@@ -37,6 +39,7 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         /* Initialize managers (independent) */
         serverLockManager = LocalServerLockManager
         worldLockManager = LocalWorldLockManager
+        userDataManager = UserDataManager(dataFolder.resolve("data").resolve("users"))
     }
 
     override fun enable() {
@@ -51,14 +54,16 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         worldAutoLoader = WorldAutoLoader(scheduleManager)
         worldAutoLoader.bindWith(this)
         worldAutoLoader.load() // load worlds from files
+        userDataManager.bindWith(this)
+        userDataManager.preloadUsers()
 
         /* Initialize messenger */
         val messenger = RedisProvider.redisProvider().getRedis()
         MasterChannel(messenger, scheduleManager, serverLockManager).bindWith(this)
 
         /* Register listeners */
-        PlayerListener(serverLockManager, worldLockManager).also { registerTerminableListener(it).bindWith(this) }
-        WorldListener(serverLockManager, worldLockManager).also { registerTerminableListener(it).bindWith(this) }
+        PlayerListener(serverLockManager, worldLockManager, userDataManager).also { registerTerminableListener(it).bindWith(this) }
+        WorldListener(serverLockManager, worldLockManager, userDataManager).also { registerTerminableListener(it).bindWith(this) }
 
         /* Register expansions */
         if (isPluginPresent("PlaceholderAPI")) {
