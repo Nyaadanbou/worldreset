@@ -27,7 +27,7 @@ class WorldAutoLoader(
     private val prettyJson = Json { prettyPrint = true }
 
     init {
-        check(worldInfoDirectory.isDirectory) { "The world info directory must be a directory." }
+        check(worldInfoDirectoryOrCreate.isDirectory) { "The world info directory must be a directory." }
     }
 
     private val worldInfoDirectoryOrCreate: File
