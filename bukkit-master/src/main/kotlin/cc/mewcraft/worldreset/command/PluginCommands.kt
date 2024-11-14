@@ -51,7 +51,7 @@ class PluginCommands(
         manager = LegacyPaperCommandManager(plugin, ExecutionCoordinator.simpleCoordinator(), SenderMapper.identity())
         manager.registerBrigadier()
         manager.buildAndRegister(ROOT_COMMAND) {
-            literal("reset")
+            literal("reset_world")
             required("world", WorldParser.worldParser())
             required("environment", EnumParser.enumParser(Environment::class.java))
             optional("keep_seed", BooleanParser.booleanParser())
