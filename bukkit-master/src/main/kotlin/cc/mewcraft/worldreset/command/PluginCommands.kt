@@ -7,17 +7,14 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.bukkit.World
 import org.bukkit.World.*
 import org.bukkit.command.CommandSender
 import org.incendo.cloud.SenderMapper
-import org.incendo.cloud.bukkit.parser.WorldParser
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.kotlin.extension.buildAndRegister
 import org.incendo.cloud.paper.LegacyPaperCommandManager
-import org.incendo.cloud.parser.standard.BooleanParser
-import org.incendo.cloud.parser.standard.EnumParser
+import org.incendo.cloud.parser.standard.*
 
 class PluginCommands(
     private val serverLockManager: ServerLockManager,
@@ -52,7 +49,7 @@ class PluginCommands(
         manager.registerBrigadier()
         manager.buildAndRegister(ROOT_COMMAND) {
             literal("reset_world")
-            required("world", WorldParser.worldParser())
+            required("world", StringParser.stringParser())
             required("environment", EnumParser.enumParser(Environment::class.java))
             optional("keep_seed", BooleanParser.booleanParser())
             permission = "worldreset.command.admin"
@@ -67,13 +64,13 @@ class PluginCommands(
 
                     // Reassign the reset job
                     resetJob = plugin.launch {
-                        val world = ctx.get<World>("world")
+                        val world = ctx.get<String>("world")
                         val environment = ctx.get<Environment>("environment")
                         val keepSeed = ctx.getOrDefault("keep_seed", false)
 
-                        sender.sendRichMessage("Start resetting world: ${world.name}")
+                        sender.sendRichMessage("Start resetting world: $world")
 
-                        val worldData = WorldData(world.name, keepSeed, environment)
+                        val worldData = WorldData(world, keepSeed, environment)
                         if (worldData.regen()) {
                             sender.sendRichMessage("World reset completed!")
                         } else {
