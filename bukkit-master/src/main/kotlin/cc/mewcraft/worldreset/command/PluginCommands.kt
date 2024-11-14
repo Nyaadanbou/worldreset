@@ -87,6 +87,15 @@ class PluginCommands(
             }
         }
         manager.buildAndRegister(ROOT_COMMAND) {
+            literal("reset_joined_status")
+            permission = "worldreset.command.admin"
+            handler { ctx ->
+                val sender = ctx.sender()
+                plugin.userDataManager.modifyEachUser { it.copy(hasJoined = false) }
+                sender.sendRichMessage("All joined status has been reset!")
+            }
+        }
+        manager.buildAndRegister(ROOT_COMMAND) {
             literal("serverlock")
             required("status", BooleanParser.booleanParser())
             permission = "worldreset.command.admin"
