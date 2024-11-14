@@ -87,7 +87,7 @@ class PluginCommands(
             }
         }
         manager.buildAndRegister(ROOT_COMMAND) {
-            literal("reset_joined_status")
+            literal("reset_joined")
             permission = "worldreset.command.admin"
             handler { ctx ->
                 val sender = ctx.sender()
