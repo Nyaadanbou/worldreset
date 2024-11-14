@@ -40,7 +40,8 @@ data class ScheduleQueryResponse(
         name, durationUntilNextExecution.seconds
     )
 
-    val durationUntilNextExecution: Duration = Duration.ofSeconds(secondsUntilNextExecution)
+    val durationUntilNextExecution: Duration
+        get() = Duration.ofSeconds(secondsUntilNextExecution)
 }
 
 data object ServerLockQueryRequest
