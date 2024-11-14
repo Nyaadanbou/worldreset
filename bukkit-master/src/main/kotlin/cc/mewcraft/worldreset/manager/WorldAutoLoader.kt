@@ -9,12 +9,14 @@ import kotlinx.serialization.json.Json
 import me.lucko.helper.terminable.Terminable
 import net.kyori.adventure.util.TriState
 import org.bukkit.World
-import org.bukkit.World.Environment
+import org.bukkit.World.*
 import org.bukkit.WorldCreator
+import java.io.File
 
 private const val PREFIX = "[WorldAutoLoader]"
 
 class WorldAutoLoader(
+    private val worldInfoDirectory: File,
     /**
      * An instance of [ScheduleManager].
      *
@@ -23,7 +25,18 @@ class WorldAutoLoader(
     private val scheduleManager: ScheduleManager,
 ) : Terminable {
     private val prettyJson = Json { prettyPrint = true }
-    private val worldInfoFile = plugin.dataFolder.resolve("data").resolve("worlds.json")
+
+    init {
+        check(worldInfoDirectory.isDirectory) { "The world info directory must be a directory." }
+    }
+
+    private val worldInfoDirectoryOrCreate: File
+        get() {
+            if (!worldInfoDirectory.exists()) {
+                worldInfoDirectory.mkdirs()
+            }
+            return worldInfoDirectory
+        }
 
     /**
      * Loads all custom worlds specified in the schedules.
@@ -37,12 +50,14 @@ class WorldAutoLoader(
         logger.info("$PREFIX Loading custom worlds specified in the schedules.")
         logger.info("$PREFIX Server might lag for a while. Please bear with it!")
 
-        logger.info("$PREFIX Loading world info file: `${worldInfoFile.path}`")
-        val worldInfoList: List<WorldInfo>? = worldInfoFile
-            .takeIf { it.exists() }
-            ?.readText()
-            ?.let { prettyJson.decodeFromString(it) }
-        logger.info("$PREFIX Loaded ${worldInfoList?.size ?: 0} world info.")
+        logger.info("$PREFIX Loading world info files from directory: `${worldInfoDirectoryOrCreate.path}`")
+        val worldInfoMap: Map<String, WorldInfo> = worldInfoDirectoryOrCreate
+            .listFiles { file -> file.extension == "json" }
+            ?.associate { file ->
+                val worldInfo = prettyJson.decodeFromString<WorldInfo>(file.readText())
+                worldInfo.name to worldInfo
+            } ?: emptyMap()
+        logger.info("$PREFIX Loaded ${worldInfoMap.size} world info files.")
 
         for (data in worldDataSequence) {
             if (data.isMainWorld) {
@@ -54,7 +69,7 @@ class WorldAutoLoader(
                 logger.info("$PREFIX World directory exists: `${data.name}`. Trying to load it.")
 
                 val worldCreator = WorldCreator(data.name)
-                val worldInfo = worldInfoList?.find { it.name == data.name }
+                val worldInfo = worldInfoMap[data.name]
                 if (worldInfo != null) {
                     logger.info("$PREFIX World info exists. Mending world creator: `${data.name}`")
                     worldCreator
@@ -85,29 +100,25 @@ class WorldAutoLoader(
      */
     override fun close() {
         val worlds: MutableList<World> = plugin.server.worlds
-        val worldInfoList: List<WorldInfo> = buildList {
-            for (world in worlds) {
-                val name = world.name
-                val seed = world.seed
-                val environment = world.environment
-                val keepSpawnInMemory = world.keepSpawnInMemory
-                val generateStructures = world.canGenerateStructures()
-                val hardcore = world.isHardcore
-                val worldInfo = WorldInfo(
-                    name,
-                    seed,
-                    environment.name,
-                    keepSpawnInMemory,
-                    generateStructures,
-                    hardcore,
-                )
-                this += worldInfo
-            }
+        for (world in worlds) {
+            val name = world.name
+            val seed = world.seed
+            val environment = world.environment
+            val keepSpawnInMemory = world.keepSpawnInMemory
+            val generateStructures = world.canGenerateStructures()
+            val hardcore = world.isHardcore
+            val worldInfo = WorldInfo(
+                name,
+                seed,
+                environment.name,
+                keepSpawnInMemory,
+                generateStructures,
+                hardcore,
+            )
+            val json = prettyJson.encodeToString(worldInfo)
+            val worldInfoFile = File(worldInfoDirectoryOrCreate, "$name.json")
+            worldInfoFile.writeText(json)
         }
-
-        val jsonList = prettyJson.encodeToString(worldInfoList)
-        worldInfoFile.parentFile.mkdirs()
-        worldInfoFile.writeText(jsonList)
     }
 }
 
@@ -116,9 +127,7 @@ private data class WorldInfo(
     val name: String,
     val seed: Long,
     val environment: String,
-    // val generator: String,
     val keepSpawnInMemory: Boolean,
     val generateStructures: Boolean,
-    // val generatorSettings: String,
     val hardcore: Boolean,
 )

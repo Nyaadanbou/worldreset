@@ -51,7 +51,7 @@ class WorldResetPlugin : ExtendedJavaPlugin() {
         scheduleManager = LocalScheduleManager(settings)
         scheduleManager.bindWith(this)
         scheduleManager.load() // load schedules from files
-        worldAutoLoader = WorldAutoLoader(scheduleManager)
+        worldAutoLoader = WorldAutoLoader(dataFolder.resolve("data").resolve("worlds"), scheduleManager)
         worldAutoLoader.bindWith(this)
         worldAutoLoader.load() // load worlds from files
         userDataManager.bindWith(this)
