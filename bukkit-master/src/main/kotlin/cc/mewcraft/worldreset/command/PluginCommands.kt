@@ -71,7 +71,7 @@ class PluginCommands(
                         val environment = ctx.get<Environment>("environment")
                         val keepSeed = ctx.getOrDefault("keep_seed", false)
 
-                        sender.sendRichMessage("Start resetting world: $world")
+                        sender.sendRichMessage("Start resetting world: ${world.name}")
 
                         val worldData = WorldData(world.name, keepSeed, environment)
                         if (worldData.regen()) {
