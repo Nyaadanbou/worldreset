@@ -31,7 +31,7 @@ private class SingleCommandData(
      * - `[delete-file] plugins/CustomStructures/data`
      * - `[console-cmd] customstructures reload`
      * - `[console-cmd] teleport @a 0 0 0 ~ ~`
-     * - `[reset-joined]` (no data)
+     * - `[reset-joined] .`
      */
     command: String,
 ) {
