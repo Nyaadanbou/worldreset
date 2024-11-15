@@ -4,12 +4,18 @@ import cc.mewcraft.worldreset.data.WorldData
 import cc.mewcraft.worldreset.manager.ServerLockManager
 import cc.mewcraft.worldreset.plugin
 import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.bukkit.World
 import org.bukkit.World.*
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.bukkit.data.MultipleEntitySelector
+import org.incendo.cloud.bukkit.parser.WorldParser
+import org.incendo.cloud.bukkit.parser.selector.MultipleEntitySelectorParser
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.coroutines.extension.suspendingHandler
 import org.incendo.cloud.kotlin.extension.buildAndRegister
@@ -101,6 +107,23 @@ class PluginCommands(
                 val status = ctx.get<Boolean>("status")
                 serverLockManager.setLock(status)
                 sender.sendRichMessage("Current server lock: ${status.toString().uppercase()}")
+            }
+        }
+        manager.buildAndRegister(ROOT_COMMAND) {
+            literal("spawn")
+            required("target", MultipleEntitySelectorParser.multipleEntitySelectorParser())
+            required("world", WorldParser.worldParser())
+            permission = "worldreset.command.admin"
+            suspendingHandler(context = plugin.minecraftDispatcher) { ctx ->
+                val sender = ctx.sender()
+                val target = ctx.get<MultipleEntitySelector>("target")
+                val world = ctx.get<World>("world")
+                target.values()
+                    .filterIsInstance<Player>()
+                    .forEach {
+                        it.teleport(world.spawnLocation)
+                    }
+                sender.sendRichMessage("Teleported ${target.values().size} entities to ${world.name}")
             }
         }
         manager.buildAndRegister(ROOT_COMMAND) {
