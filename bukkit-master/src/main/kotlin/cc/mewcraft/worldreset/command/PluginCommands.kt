@@ -122,7 +122,9 @@ class PluginCommands(
                 target.values()
                     .filterIsInstance<Player>()
                     .forEach { player ->
-                        val spawnLocation = world.spawnLocation.toHighestLocation(HeightMap.WORLD_SURFACE)
+                        val spawnLocation = world.spawnLocation
+                            .toHighestLocation(HeightMap.WORLD_SURFACE)
+                            .add(.0, 1.0, .0)
                         player.teleport(spawnLocation)
                     }
                 sender.sendRichMessage("Teleported ${target.values().size} entities to ${world.name}")
