@@ -8,6 +8,7 @@ import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.bukkit.HeightMap
 import org.bukkit.World
 import org.bukkit.World.*
 import org.bukkit.command.CommandSender
@@ -120,8 +121,9 @@ class PluginCommands(
                 val world = ctx.get<World>("world")
                 target.values()
                     .filterIsInstance<Player>()
-                    .forEach {
-                        it.teleport(world.spawnLocation)
+                    .forEach { player ->
+                        val spawnLocation = world.spawnLocation.toHighestLocation(HeightMap.WORLD_SURFACE)
+                        player.teleport(spawnLocation)
                     }
                 sender.sendRichMessage("Teleported ${target.values().size} entities to ${world.name}")
             }
